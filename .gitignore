@@ -1,0 +1,13 @@
+node_modules/
+.edge-profile*/
+*.log
+logs/
+.analysis-assets/
+.venv*/
+dist/
+config.local.json
+target.json
+.credentials*.dpapi
+.session*.dpapi
+.env*
+*.zip

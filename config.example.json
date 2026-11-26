@@ -1,0 +1,10 @@
+{
+  "accounts": {
+    "primary": { "buddy": "同伴姓名" },
+    "secondary": { "buddy": "第二账号的同伴姓名" }
+  },
+  "ocr": {
+    "runner": "windows",
+    "python": ".venv\\Scripts\\python.exe"
+  }
+}

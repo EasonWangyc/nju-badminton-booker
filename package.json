@@ -1,0 +1,21 @@
+{
+  "name": "nju-badminton-booker",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Scheduled NJU badminton reservation in Microsoft Edge",
+  "scripts": {
+    "setup": "node book.js --setup",
+    "check": "node book.js --check",
+    "book": "node book.js --book",
+    "test:payment": "node payment-test.js",
+    "test:retry": "node retry-test.js",
+    "test:pair": "node pair-test.js",
+    "set-date": "node configure.js"
+  },
+  "dependencies": {
+    "playwright-core": "1.65.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

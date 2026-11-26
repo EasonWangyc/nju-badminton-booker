@@ -1,0 +1,7 @@
+{
+  "date": null,
+  "mode": "pair",
+  "venues": [126, 120],
+  "accounts": ["primary", "secondary"],
+  "times": ["16:00-17:00", "17:00-18:00", "18:00-19:00", "19:00-20:00"]
+}
