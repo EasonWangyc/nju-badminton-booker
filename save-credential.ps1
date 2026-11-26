@@ -1,4 +1,4 @@
-param(
+﻿param(
     [ValidateSet('primary', 'secondary')][string]$Account = 'primary',
     [switch]$FromStdin
 )

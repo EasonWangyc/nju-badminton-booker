@@ -6,50 +6,39 @@ Windows 计划任务每天 07:55 启动脚本，仅在本机 target.json 指定�
 
 ## 新电脑安装
 
-需要 Windows 11、Microsoft Edge、Node.js 22 或更新版本，以及 Python 3。以下命令在项目目录的 Windows PowerShell 5.1 中运行。
+需要 Windows 11、Microsoft Edge 和 Node.js 22 或更新版本。Python 依赖由 [uv](https://docs.astral.sh/uv/getting-started/installation/) 管理；仓库中的 pyproject.toml、uv.lock 和 .python-version 固定依赖与 Python 3.11。uv 会在项目内创建 .venv，缺少 Python 3.11 时自动下载。无需激活虚拟环境，也无需安装 WSL。
 
-1. 安装 Node 依赖：
+从 [GitHub 仓库](https://github.com/EasonWangyc/nju-badminton-booker) 下载 ZIP 并解压，或在 **Windows PowerShell 5.1** 中克隆：
 
-   ```powershell
-   npm ci --omit=dev
-   ```
+```powershell
+git clone https://github.com/EasonWangyc/nju-badminton-booker.git
+Set-Location -LiteralPath '.\nju-badminton-booker'
+```
 
-2. 建立 OCR 环境：
+在项目目录运行后续命令。若尚未安装 uv，可先运行以下命令，然后重新打开 PowerShell：
 
-   ```powershell
-   py -m venv .venv
-   & '.\.venv\Scripts\python.exe' -m pip install -r '.\requirements-ocr.txt'
-   ```
+```powershell
+winget install --id=astral-sh.uv -e
+```
 
-   如果 py 不可用，可用已安装的 Python 3 可执行文件替代。也支持 WSL：在 config.local.json 中将 ocr.runner 设为 wsl，填写发行版和 Linux Python 的绝对路径，并在该环境安装 requirements-ocr.txt。Windows 方案无需 WSL。
+若电脑没有 winget，按上面的 uv 官方安装说明安装。随后运行安装向导：
 
-3. 复制示例并填写本机设置：
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\setup.ps1
+```
 
-   ```powershell
-   Copy-Item -LiteralPath '.\config.example.json' -Destination '.\config.local.json'
-   Copy-Item -LiteralPath '.\target.example.json' -Destination '.\target.json'
-   ```
+安装向导会执行 npm ci 和 uv sync，检查 OCR 依赖，创建不入库的本地配置，提示输入要用的账号与同伴姓名，并用 Windows DPAPI 加密保存登录凭据。最后可选择安装 07:55 的计划任务。再次运行向导会保留已有本地配置和凭据；不会设置任何预约日期。
 
-   为所用账号填写同伴姓名。使用上述 Windows Python 环境时，将 config.local.json 的 ocr 部分设置为：
+如果需要分步检查环境，可运行：
 
-    "ocr": { "runner": "windows", "python": ".venv\\Scripts\\python.exe" }
+```powershell
+Get-Command node.exe, npm.cmd, uv.exe -ErrorAction Stop
+npm.cmd ci --omit=dev
+uv.exe sync --locked
+& '.\.venv\Scripts\python.exe' -c 'import ddddocr, cv2, onnxruntime'
+```
 
-4. 交互保存各账号凭据。密码由当前 Windows 用户的 DPAPI 加密，不要写入命令行：
-
-   ```powershell
-   .\save-credential.ps1 -Account primary
-   .\save-credential.ps1 -Account secondary
-   ```
-
-   若系统的脚本执行策略阻止运行，可用 PowerShell 的 -ExecutionPolicy Bypass -File 参数单次执行。
-
-5. 安装每天运行的计划任务：
-
-   ```powershell
-   .\install-task.ps1
-   ```
-
-   任务名 NJU-Badminton-Booking，07:55 启动。使用日期不等于当天时直接退出。电脑在预约时须开机联网，当前 Windows 用户须保持登录。
+config.example.json 默认使用 .venv\Scripts\python.exe。已有 WSL OCR 配置仍可继续使用；Windows 新安装推荐上述 .venv 方案。任务名为 NJU-Badminton-Booking，使用日期不等于当天时直接退出。电脑在预约时须开机联网，当前 Windows 用户须保持登录。
 
 ## 每天设置
 
@@ -57,7 +46,7 @@ Windows 计划任务每天 07:55 启动脚本，仅在本机 target.json 指定�
 
     node configure.js
 
-菜单先选择明天或输入指定日期，再选择账号、场馆和时段。默认双账号、两馆均可，优先 16:00–18:00，其次 18:00–20:00。双账号必须选择至少一组相邻时段，不会预约同一小时。使用日期是打球当天；设置后无需手动启动抢场脚本。node configure.js --interactive 与上述命令等效。
+菜单先选择明天或输入指定日期，再选择账号、场馆和时段；输入无效会提示重试，保存前会显示条件供确认。若只配置了一个账号，菜单默认选该账号；两个账号都有凭据时默认双账号。场馆默认两馆均可，优先 16:00–18:00，其次 18:00–20:00。双账号必须选择至少一组相邻时段，不会预约同一小时。使用日期是打球当天；设置后无需手动启动抢场脚本。node configure.js --interactive 与上述命令等效。
 
 命令行示例：
 
