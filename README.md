@@ -10,19 +10,25 @@ Windows 计划任务每天 07:55 启动脚本，仅在本机 target.json 指定�
 
 1. 安装 Node 依赖：
 
-    npm ci --omit=dev
+   ```powershell
+   npm ci --omit=dev
+   ```
 
 2. 建立 OCR 环境：
 
-    py -m venv .venv
-    & '.\.venv\Scripts\python.exe' -m pip install -r '.\requirements-ocr.txt'
+   ```powershell
+   py -m venv .venv
+   & '.\.venv\Scripts\python.exe' -m pip install -r '.\requirements-ocr.txt'
+   ```
 
    如果 py 不可用，可用已安装的 Python 3 可执行文件替代。也支持 WSL：在 config.local.json 中将 ocr.runner 设为 wsl，填写发行版和 Linux Python 的绝对路径，并在该环境安装 requirements-ocr.txt。Windows 方案无需 WSL。
 
 3. 复制示例并填写本机设置：
 
-    Copy-Item -LiteralPath '.\config.example.json' -Destination '.\config.local.json'
-    Copy-Item -LiteralPath '.\target.example.json' -Destination '.\target.json'
+   ```powershell
+   Copy-Item -LiteralPath '.\config.example.json' -Destination '.\config.local.json'
+   Copy-Item -LiteralPath '.\target.example.json' -Destination '.\target.json'
+   ```
 
    为所用账号填写同伴姓名。使用上述 Windows Python 环境时，将 config.local.json 的 ocr 部分设置为：
 
@@ -30,24 +36,28 @@ Windows 计划任务每天 07:55 启动脚本，仅在本机 target.json 指定�
 
 4. 交互保存各账号凭据。密码由当前 Windows 用户的 DPAPI 加密，不要写入命令行：
 
-    .\save-credential.ps1 -Account primary
-    .\save-credential.ps1 -Account secondary
+   ```powershell
+   .\save-credential.ps1 -Account primary
+   .\save-credential.ps1 -Account secondary
+   ```
 
    若系统的脚本执行策略阻止运行，可用 PowerShell 的 -ExecutionPolicy Bypass -File 参数单次执行。
 
 5. 安装每天运行的计划任务：
 
-    .\install-task.ps1
+   ```powershell
+   .\install-task.ps1
+   ```
 
    任务名 NJU-Badminton-Booking，07:55 启动。使用日期不等于当天时直接退出。电脑在预约时须开机联网，当前 Windows 用户须保持登录。
 
 ## 每天设置
 
-双击 每天设置预约.cmd，或运行：
+双击 configure-booking.cmd，或在项目目录运行：
 
-    node configure.js --interactive
+    node configure.js
 
-菜单可选使用日期、账号、场馆和时段。默认双账号、两馆均可，优先 16:00–18:00，其次 18:00–20:00。双账号必须选择至少一组相邻时段，不会预约同一小时。使用日期是打球当天；设置后无需手动启动抢场脚本。
+菜单先选择明天或输入指定日期，再选择账号、场馆和时段。默认双账号、两馆均可，优先 16:00–18:00，其次 18:00–20:00。双账号必须选择至少一组相邻时段，不会预约同一小时。使用日期是打球当天；设置后无需手动启动抢场脚本。node configure.js --interactive 与上述命令等效。
 
 命令行示例：
 

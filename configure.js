@@ -62,7 +62,11 @@ async function configureInteractive() {
     const defaultDate = chinaDate(tomorrow);
     console.log('南京大学羽毛球预约条件设置');
     console.log('直接按回车使用方括号中的默认选项。');
-    const date = (await input.question(`使用日期 [${defaultDate}]：`)).trim() || defaultDate;
+    console.log(`使用日期：1 明天（${defaultDate}）；2 指定日期`);
+    const dateChoice = (await input.question('选择 [1]：')).trim() || '1';
+    if (!['1', '2'].includes(dateChoice)) throw new Error('日期选项无效');
+    const date = dateChoice === '1'
+      ? defaultDate : (await input.question('使用日期（YYYY-MM-DD）：')).trim();
     validateDate(date);
     console.log('账号：1 两个账号；2 仅账号1；3 仅账号2');
     const accountChoice = (await input.question('选择 [1]：')).trim() || '1';
@@ -91,10 +95,13 @@ async function configureInteractive() {
   }
 }
 
-if (process.argv[2] === '--interactive') {
-  if (process.argv.length !== 3) throw new Error('交互模式不接受额外参数');
+const args = process.argv.slice(2);
+if (args.length === 0 || (args.length === 1 && args[0] === '--interactive')) {
   configureInteractive().catch(error => { console.error(`设置失败：${error.message}`); process.exitCode = 1; });
+} else if (args.length === 1 && ['--help', '-h'].includes(args[0])) {
+  console.log('用法：node configure.js [--interactive | --clear | YYYY-MM-DD [--pair] [--venues 126,120] [--accounts primary,secondary] [--times 16:00-17:00,17:00-18:00]]');
+  console.log('不传参数时进入交互菜单。');
 } else {
-  try { configureCli(process.argv.slice(2)); }
+  try { configureCli(args); }
   catch (error) { console.error(`设置失败：${error.message}`); process.exitCode = 1; }
 }
